@@ -24,6 +24,7 @@
 
   outputs =
     {
+      self,
       nixpkgs,
       pyproject-nix,
       uv2nix,
@@ -89,11 +90,7 @@
         }
       );
 
-      packages = forAllSystems (system: {
-        default = pythonSets.${system}.mkVirtualEnv "nixified-django-env" workspace.deps.default;
-      });
-
-      apps = forAllSystems (
+      packages = forAllSystems (
         system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
@@ -103,9 +100,20 @@
           '';
         in
         {
+          default = virtualenv;
+          start = startScript;
+        }
+      );
+
+      apps = forAllSystems (
+        system:
+        let
+          packages = self.packages.${system};
+        in
+        {
           default = {
             type = "app";
-            program = "${startScript}/bin/start.sh";
+            program = "${packages.start}/bin/start.sh";
           };
         }
       );
