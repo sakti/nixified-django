@@ -16,3 +16,6 @@ content = f"""
 
 def index(request):
     return HttpResponse(content, content_type="text/html")
+
+def health(request):
+    return HttpResponse("OK", content_type="text/plain")
